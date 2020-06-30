@@ -1,4 +1,4 @@
-import { Component, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
+import { Component, ViewContainerRef, ComponentFactoryResolver, ComponentRef } from '@angular/core';
 import { ModalComponent } from './modal/modal.component';
 
 @Component({
@@ -7,15 +7,33 @@ import { ModalComponent } from './modal/modal.component';
   styleUrls: [ './app.component.css' ]
 })
 export class AppComponent {
+  private modal: ComponentRef<ModalComponent>;
+
   constructor(
     private vcr: ViewContainerRef,
     private cfr: ComponentFactoryResolver
   ) {}
 
-  public async showModal() {
+  private closeModal(): void {
     this.vcr.clear();
-    const { ModalComponent } = await import('./modal/modal.component');
-    const modalInstance = this.vcr.createComponent(this.cfr.resolveComponentFactory(ModalComponent));
-    modalInstance.instance.vcr = this.vcr;
+  }
+
+  private async setModalComponent() {
+    try {
+      const { ModalComponent } = await import('./modal/modal.component');
+      this.modal = this.vcr.createComponent(this.cfr.resolveComponentFactory(ModalComponent));
+      this.onCloseModal();
+    } catch (error) {
+      throw new Error(error)
+    }
+  }
+
+  private onCloseModal(): void {
+    this.modal.instance.close.subscribe(() => this.closeModal());
+  }
+
+  public async showModal() {
+    this.closeModal();
+    this.setModalComponent();
   }
 }

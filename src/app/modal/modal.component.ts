@@ -1,4 +1,4 @@
-import { Component, ComponentRef, ViewContainerRef } from '@angular/core';
+import { Component, Output, EventEmitter } from '@angular/core';
 
 @Component({
   selector: 'app-modal',
@@ -6,9 +6,5 @@ import { Component, ComponentRef, ViewContainerRef } from '@angular/core';
   styleUrls: ['./modal.component.css']
 })
 export class ModalComponent {
-  public vcr: ViewContainerRef;
-
-  public close() {
-    this.vcr.clear();
-  }
+  @Output() public close = new EventEmitter<void>();
 }
